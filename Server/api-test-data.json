@@ -1,0 +1,253 @@
+{
+  "description": "MaxERP Leave Request Workflow - API Test Data and Examples",
+  "version": "1.0.0",
+  "baseUrl": "http://localhost:4001",
+  
+  "testUsers": {
+    "employees": [
+      {
+        "email": "john.doe@company.com",
+        "password": "password123",
+        "name": "John Doe",
+        "role": "EMPLOYEE",
+        "department": "Engineering",
+        "leaveBalance": {
+          "annual": 20,
+          "sick": 10,
+          "personal": 5
+        }
+      },
+      {
+        "email": "jane.smith@company.com",
+        "password": "password123",
+        "name": "Jane Smith",
+        "role": "EMPLOYEE",
+        "department": "Marketing",
+        "leaveBalance": {
+          "annual": 18,
+          "sick": 8,
+          "personal": 3
+        }
+      },
+      {
+        "email": "alex.brown@company.com",
+        "password": "password123",
+        "name": "Alex Brown",
+        "role": "EMPLOYEE",
+        "department": "Sales",
+        "leaveBalance": {
+          "annual": 15,
+          "sick": 6,
+          "personal": 2
+        }
+      }
+    ],
+    "managers": [
+      {
+        "email": "mike.johnson@company.com",
+        "password": "password123",
+        "name": "Mike Johnson",
+        "role": "MANAGER",
+        "department": "Engineering",
+        "leaveBalance": {
+          "annual": 25,
+          "sick": 12,
+          "personal": 7
+        }
+      },
+      {
+        "email": "sarah.wilson@company.com",
+        "password": "password123",
+        "name": "Sarah Wilson",
+        "role": "MANAGER",
+        "department": "Marketing",
+        "leaveBalance": {
+          "annual": 22,
+          "sick": 10,
+          "personal": 5
+        }
+      }
+    ]
+  },
+
+  "apiEndpoints": {
+    "authentication": {
+      "login": {
+        "method": "POST",
+        "url": "/auth/login",
+        "description": "User login to get JWT token",
+        "requestBody": {
+          "email": "john.doe@company.com",
+          "password": "password123"
+        },
+        "response": {
+          "user": {
+            "id": "uuid",
+            "email": "john.doe@company.com",
+            "name": "John Doe",
+            "role": "EMPLOYEE",
+            "department": "Engineering",
+            "leaveBalance": {
+              "annual": 20,
+              "sick": 10,
+              "personal": 5
+            },
+            "createdAt": "2024-01-01T00:00:00.000Z"
+          },
+          "token": "jwt-token-here"
+        }
+      }
+    },
+    "leaveRequests": {
+      "apply": {
+        "method": "POST",
+        "url": "/leave/apply",
+        "description": "Apply for leave (Employee only)",
+        "headers": {
+          "Authorization": "Bearer {jwt-token}",
+          "Content-Type": "application/json"
+        },
+        "requestBody": {
+          "type": "ANNUAL",
+          "startDate": "2024-02-15",
+          "endDate": "2024-02-16",
+          "reason": "Family vacation"
+        },
+        "response": {
+          "id": "uuid",
+          "employeeName": "John Doe",
+          "employeeEmail": "john.doe@company.com",
+          "type": "ANNUAL",
+          "startDate": "2024-02-15",
+          "endDate": "2024-02-16",
+          "reason": "Family vacation",
+          "status": "PENDING",
+          "appliedAt": "2024-01-15T10:30:00.000Z"
+        }
+      },
+      "getPending": {
+        "method": "GET",
+        "url": "/leave/pending",
+        "description": "Get pending leave requests (Manager only)",
+        "headers": {
+          "Authorization": "Bearer {manager-jwt-token}"
+        },
+        "response": [
+          {
+            "id": "uuid",
+            "employeeName": "John Doe",
+            "employeeEmail": "john.doe@company.com",
+            "type": "ANNUAL",
+            "startDate": "2024-02-15",
+            "endDate": "2024-02-16",
+            "reason": "Family vacation",
+            "status": "PENDING",
+            "appliedAt": "2024-01-15T10:30:00.000Z"
+          }
+        ]
+      },
+      "approve": {
+        "method": "POST",
+        "url": "/leave/approve/{request-id}",
+        "description": "Approve or reject leave request (Manager only)",
+        "headers": {
+          "Authorization": "Bearer {manager-jwt-token}",
+          "Content-Type": "application/json"
+        },
+        "requestBody": {
+          "status": "APPROVED",
+          "comments": "Approved for family vacation"
+        },
+        "response": {
+          "id": "uuid",
+          "employeeName": "John Doe",
+          "employeeEmail": "john.doe@company.com",
+          "type": "ANNUAL",
+          "startDate": "2024-02-15",
+          "endDate": "2024-02-16",
+          "reason": "Family vacation",
+          "status": "APPROVED",
+          "appliedAt": "2024-01-15T10:30:00.000Z",
+          "reviewedAt": "2024-01-15T14:30:00.000Z",
+          "reviewedBy": "mike.johnson@company.com",
+          "comments": "Approved for family vacation"
+        }
+      },
+      "summary": {
+        "method": "GET",
+        "url": "/leave/summary?employeeId={user-id}&month=2&year=2024",
+        "description": "Get monthly leave summary",
+        "headers": {
+          "Authorization": "Bearer {jwt-token}"
+        },
+        "response": {
+          "employeeId": "uuid",
+          "employeeName": "John Doe",
+          "month": 2,
+          "year": 2024,
+          "totalRequests": 3,
+          "approvedRequests": 2,
+          "pendingRequests": 1,
+          "rejectedRequests": 0,
+          "totalDays": 5,
+          "byType": {
+            "ANNUAL": {
+              "count": 2,
+              "days": 3
+            },
+            "SICK": {
+              "count": 1,
+              "days": 2
+            },
+            "PERSONAL": {
+              "count": 0,
+              "days": 0
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "curlExamples": {
+    "login": "curl -X POST http://localhost:4001/auth/login -H 'Content-Type: application/json' -d '{\"email\": \"john.doe@company.com\", \"password\": \"password123\"}'",
+    "applyLeave": "curl -X POST http://localhost:4001/leave/apply -H 'Authorization: Bearer YOUR_JWT_TOKEN' -H 'Content-Type: application/json' -d '{\"type\": \"ANNUAL\", \"startDate\": \"2024-02-15\", \"endDate\": \"2024-02-16\", \"reason\": \"Family vacation\"}'",
+    "getPending": "curl -X GET http://localhost:4001/leave/pending -H 'Authorization: Bearer MANAGER_JWT_TOKEN'",
+    "approveLeave": "curl -X PUT http://localhost:4001/leave/approve/REQUEST_ID -H 'Authorization: Bearer MANAGER_JWT_TOKEN' -H 'Content-Type: application/json' -d '{\"status\": \"APPROVED\", \"comments\": \"Approved\"}'",
+    "getSummary": "curl -X GET 'http://localhost:4001/leave/summary?employeeId=USER_ID&month=2&year=2024' -H 'Authorization: Bearer JWT_TOKEN'"
+  },
+
+  "leaveTypes": ["ANNUAL", "SICK", "PERSONAL"],
+  "leaveStatuses": ["PENDING", "APPROVED", "REJECTED"],
+  "userRoles": ["EMPLOYEE", "MANAGER"],
+
+  "validationRules": {
+    "leaveRequest": {
+      "startDate": "Cannot be in the past",
+      "endDate": "Cannot be before start date",
+      "maxDays": "Maximum 30 days per request",
+      "noOverlap": "Cannot overlap with existing approved leaves",
+      "sufficientBalance": "Must have enough leave balance"
+    },
+    "authentication": {
+      "required": "All endpoints except login require JWT token",
+      "roleBased": "Some endpoints require specific roles (Manager for approval)"
+    }
+  },
+
+  "errorResponses": {
+    "400": "Bad Request - Validation errors",
+    "401": "Unauthorized - Invalid credentials or missing token",
+    "403": "Forbidden - Insufficient permissions",
+    "404": "Not Found - Resource not found",
+    "500": "Internal Server Error - Server errors"
+  },
+
+  "setupInstructions": {
+    "1": "Start Redis server: docker run -d -p 6379:6379 redis:alpine",
+    "2": "Install dependencies: npm install",
+    "3": "Seed database: npm run seed",
+    "4": "Start server: npm run start:dev",
+    "5": "Test with provided curl examples"
+  }
+}
