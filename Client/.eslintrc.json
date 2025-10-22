@@ -1,0 +1,57 @@
+{
+    "extends": [
+      "next/core-web-vitals",
+      "plugin:@typescript-eslint/recommended",
+      "prettier",
+      "plugin:tailwindcss/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint", "import", "tailwindcss"],
+    "rules": {
+      "react-hooks/rules-of-hooks": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "no-console": "warn",
+      "quotes": "off",
+      "react/jsx-filename-extension": ["error", { "extensions": [".tsx"] }],
+      "@typescript-eslint/naming-convention": "off",
+      "import/order": "off",
+      "indent": "off",
+      "max-len": "off",
+      "tailwindcss/classnames-order": "off",
+      "tailwindcss/no-custom-classname": "off",
+      "tailwindcss/no-contradicting-classname": "off",
+      "tailwindcss/enforces-shorthand": "off",
+      "tailwindcss/migration-from-tailwind-2": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "prefer-const": "warn",
+      "react/no-unescaped-entities": "off"
+    },
+    "overrides": [
+      {
+        "files": ["*.ts", "*.tsx"],
+        "rules": {
+          "@typescript-eslint/explicit-module-boundary-types": "error"
+        }
+      },
+      {
+        "files": ["*.d.ts"],
+        "rules": {
+          "@typescript-eslint/no-explicit-any": "error",
+          "@typescript-eslint/no-empty-interface": "error",
+          "@typescript-eslint/no-namespace": "error",
+          "@typescript-eslint/triple-slash-reference": "error",
+          "@typescript-eslint/consistent-type-definitions": ["error", "interface"]
+        }
+      }
+    ],
+    "settings": {
+      "tailwindcss": {
+        "callees": ["cn", "clsx", "twMerge"],
+        "config": "tailwind.config.js",
+        "cssFiles": ["**/*.css", "!**/node_modules", "!**/.*", "!**/dist", "!**/build"],
+        "whitelist": ["layout-basic"]
+      }
+    }
+  }
