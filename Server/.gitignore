@@ -30,3 +30,7 @@ jspm_packages/
 
 # Ignore coverage directories
 coverage/
+# local env (never commit)
+.env
+.env.*
+!.env.example

@@ -6,9 +6,7 @@ export default () => ({
     password: process.env.REDIS_PASSWORD || "",
   },
   jwt: {
-    secret:
-      process.env.JWT_SECRET ||
-      "REDACTED_JWT_SECRET",
+    secret: process.env.JWT_SECRET, // required: set in Server/.env (see .env.example)
     expiresIn: "24h",
   },
 });

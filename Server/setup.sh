@@ -28,7 +28,7 @@ PORT=4001
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=
-JWT_SECRET=REDACTED_JWT_SECRET
+JWT_SECRET=$(openssl rand -base64 48 | tr -d "\n")
 NODE_ENV=development
 EOF
     echo "✅ .env file created"
